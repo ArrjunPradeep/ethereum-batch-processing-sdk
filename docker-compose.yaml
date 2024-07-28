@@ -1,0 +1,7 @@
+services:
+  txnPostgres:
+    image: postgres:13.15-bullseye
+    env_file: 
+      - ./env/database.env
+    ports:
+      - 5434:5432
