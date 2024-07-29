@@ -3,8 +3,17 @@ import { TransactionDITokens } from "src/core/domain/transaction/di/TransactionD
 import { gasEstimatorService } from "src/core/service/transaction/usecase/gasEstimator.service";
 import { sendCoinService } from "src/core/service/transaction/usecase/sendCoin.service";
 import { sendTokenService } from "src/core/service/transaction/usecase/sendToken.service";
+import { TransactionController } from "../api/http-rest/controller/transaction.controller";
+import { TypeOrmTransactionRepositoryAdapter } from "src/infrastructure/adapter/persistence/typeorm/repository/transaction/typeOrmTransactionRepository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { TypeOrmTransaction } from "src/infrastructure/adapter/persistence/typeorm/entity/typeOrmTransaction";
 
-const persistenceProviders: Provider[] = []
+const persistenceProviders: Provider[] = [
+    {
+        provide: TransactionDITokens.TransactionRepository,
+        useClass: TypeOrmTransactionRepositoryAdapter
+    }
+]
 
 const useCaseProviders: Provider[] = [
     {
@@ -25,13 +34,18 @@ const useCaseProviders: Provider[] = [
 ]
 
 @Module({
-    imports: [],
-    controllers: [],
+    imports: [
+        TypeOrmModule.forFeature([TypeOrmTransaction])
+    ],
+    controllers: [
+        TransactionController
+    ],
     exports: [
         TransactionDITokens.TransactionRepository
     ],
     providers: [
-        ...useCaseProviders
+        ...useCaseProviders,
+        ...persistenceProviders
     ]
 })
 
