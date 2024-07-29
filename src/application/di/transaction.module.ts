@@ -7,11 +7,16 @@ import { TransactionController } from "../api/http-rest/controller/transaction.c
 import { TypeOrmTransactionRepositoryAdapter } from "src/infrastructure/adapter/persistence/typeorm/repository/transaction/typeOrmTransactionRepository";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmTransaction } from "src/infrastructure/adapter/persistence/typeorm/entity/typeOrmTransaction";
+import { EthereumTransactionService } from "src/infrastructure/adapter/ethereum/ethereumTransaction.service";
 
 const persistenceProviders: Provider[] = [
     {
         provide: TransactionDITokens.TransactionRepository,
         useClass: TypeOrmTransactionRepositoryAdapter
+    },
+    {
+        provide: 'EthereumTransactionService',
+        useClass: EthereumTransactionService
     }
 ]
 
@@ -41,7 +46,7 @@ const useCaseProviders: Provider[] = [
         TransactionController
     ],
     exports: [
-        TransactionDITokens.TransactionRepository
+        TransactionDITokens.TransactionRepository,
     ],
     providers: [
         ...useCaseProviders,
