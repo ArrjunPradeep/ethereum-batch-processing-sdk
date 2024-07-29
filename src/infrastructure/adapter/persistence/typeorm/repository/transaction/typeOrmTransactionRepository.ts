@@ -1,4 +1,4 @@
-import { Entity, EntityManager, Repository } from "typeorm";
+import { DeepPartial, Entity, EntityManager, Repository } from "typeorm";
 import { TypeOrmTransaction } from "../../entity/typeOrmTransaction";
 import { TransactionRepositoryPort } from "src/core/domain/transaction/port/persistence/TransactionRepository.port";
 import { InjectRepository } from "@nestjs/typeorm";
