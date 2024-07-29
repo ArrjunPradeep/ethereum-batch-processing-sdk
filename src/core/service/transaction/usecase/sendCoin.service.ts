@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Transaction } from "src/core/domain/transaction/entity/transaction.entity";
 import { TransactionRepositoryPort } from "src/core/domain/transaction/port/persistence/TransactionRepository.port";
-import { SendCoinPort } from "src/core/domain/transaction/port/usecase/sendCoin.port";
+import { sendCoinPort } from "src/core/domain/transaction/port/usecase/sendCoin.port";
 import { TransactionUseCaseDto } from "src/core/domain/transaction/usecase/dto/TransactionUseCase.dto";
 import { sendCoinUseCase } from "src/core/domain/transaction/usecase/sendCoin.usecase";
 
@@ -11,7 +11,7 @@ export class sendCoinService implements sendCoinUseCase {
 
     constructor(private readonly transactionRepository: TransactionRepositoryPort) {}
 
-    public async execute(payload?: SendCoinPort): Promise<TransactionUseCaseDto> {
+    public async execute(payload?: sendCoinPort): Promise<TransactionUseCaseDto> {
         const transaction: Transaction = await Transaction.new({
             chainId : payload.chainId,
             privateKey : payload.privateKey,

@@ -1,4 +1,4 @@
-export interface SendCoinPort {
+export interface sendCoinPort {
     chainId: number,
     privateKey: string,
     receiverAddress: string[],
