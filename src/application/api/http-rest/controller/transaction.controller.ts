@@ -4,6 +4,7 @@ import { TransactionDITokens } from "src/core/domain/transaction/di/TransactionD
 import { sendCoinUseCase } from "src/core/domain/transaction/usecase/sendCoin.usecase";
 import { sendTokenUseCase } from "src/core/domain/transaction/usecase/sendToken.usecase";
 import { sendCoinAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/sendCoin.adapter";
+import { sendTokenAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/sendToken.adapter";
 
 @Controller('transaction')
 export class TransactionController {
@@ -37,8 +38,25 @@ export class TransactionController {
     }
 
     @Get('SendToken')
-    async sendToken(@Body() Body, @Req() req: Request) {
-        return "SAFLE1"
+    async sendToken(@Body() body, @Req() req: Request) {
+        const adapter: sendTokenAdapter = await sendTokenAdapter.new({
+            chainId: body.chainId,
+            privateKey: body.privateKey,
+            tokenAddress: body.tokenAddress,
+            receiverAddress: body.receiverAddress,
+            amount: body.amount,
+            gasLimit: body.gasLimit,
+            maxBaseFee: body.maxBaseFee,
+            priorityFee: body.priorityFee
+        })
+
+        let info = await this.sendTokenUseCase.execute(adapter);
+
+        console.log("98271491798124", adapter);
+        
+        return {
+            info
+        }
     }
 
     @Get('gasEstimator')
