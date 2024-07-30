@@ -8,6 +8,12 @@ export class TransactionUseCaseDto {
     public chainId: number;
 
     @Expose()
+    public sender: string
+
+    @Expose()
+    public hash: string
+
+    @Expose()
     public tokenAddress?: string;
 
     @Expose()

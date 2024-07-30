@@ -22,7 +22,7 @@ export class Transaction {
     privateKey: string;
     tokenAddress?: string;
     receiverAddress: string[];
-    amount: number[];
+    amount: string[];
     gasLimit?: string;
     maxBaseFee?: string;
     priorityFee?: string;
