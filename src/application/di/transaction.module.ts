@@ -8,6 +8,7 @@ import { TypeOrmTransactionRepositoryAdapter } from "src/infrastructure/adapter/
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmTransaction } from "src/infrastructure/adapter/persistence/typeorm/entity/typeOrmTransaction";
 import { EthereumTransactionService } from "src/infrastructure/adapter/ethereum/ethereumTransaction.service";
+import { InfrastructureModule } from "./infrastructure.module";
 
 const persistenceProviders: Provider[] = [
     {
@@ -40,7 +41,8 @@ const useCaseProviders: Provider[] = [
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([TypeOrmTransaction])
+        InfrastructureModule,
+        TypeOrmModule.forFeature([TypeOrmTransaction]),
     ],
     controllers: [
         TransactionController

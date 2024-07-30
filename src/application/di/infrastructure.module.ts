@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from 'src/infrastructure/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EthereumTransactionModule } from 'src/infrastructure/adapter/ethereum/ethereumTransaction.module';
 
 @Global()
 @Module({
@@ -26,7 +27,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: configService.getOrThrow<boolean>('DATABASE.SYNCHRONIZE')
       }),
       inject: [ConfigService]
-    })
+    }),
+    EthereumTransactionModule
   ],
+  exports: [EthereumTransactionModule]
 })
+
 export class InfrastructureModule {}
