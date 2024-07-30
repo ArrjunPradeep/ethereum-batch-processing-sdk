@@ -4,6 +4,8 @@ import { sendCoinPort } from "src/core/domain/transaction/port/usecase/sendCoin.
 
 @Exclude()
 export class sendCoinAdapter implements sendCoinPort  {
+    @Expose()
+    @IsString()
     privateKey: string;
 
     @Expose()
@@ -16,7 +18,7 @@ export class sendCoinAdapter implements sendCoinPort  {
     
     @Expose()
     @IsArray()
-    amount: number[];
+    amount: string[];
     
     @Expose()
     @IsString()

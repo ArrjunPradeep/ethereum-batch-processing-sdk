@@ -23,13 +23,44 @@ export class TypeOrmTransactionRepositoryAdapter extends Repository<TypeOrmTrans
 
     public async sendCoin(transaction: Transaction): Promise<any> {
 
-        this.ethereumTransactionService.sendCoin(transaction);
+        const txnResult = await this.ethereumTransactionService.sendCoin(transaction);
 
-        return "sendCoin"
+        console.log(":: SEND COIN ::\n", txnResult);
+
+        const txnData: DeepPartial<TypeOrmTransaction> = {
+            sender: txnResult.from,
+            hash: txnResult.hash,
+            gasLimit: txnResult.gasLimit.toString(),
+            maxBaseFee: txnResult.maxFeePerGas.toString(),
+            priorityFee: txnResult.maxPriorityFeePerGas.toString()
+        }
+
+        let txnInfo = await this.transactionRepository.create(txnData);
+
+        await this.entityManager.save(txnInfo);
+
+        return txnData;
     }
 
     public async sendToken(transaction: Transaction): Promise<any> {
-        return "sendToken"
+        
+        const txnResult = await this.ethereumTransactionService.sendToken(transaction);
+
+        console.log(":: SEND TOKEN ::\n", txnResult);
+
+        const txnData: DeepPartial<TypeOrmTransaction> = {
+            sender: txnResult.from,
+            hash: txnResult.hash,
+            gasLimit: txnResult.gasLimit.toString(),
+            maxBaseFee: txnResult.maxFeePerGas.toString(),
+            priorityFee: txnResult.maxPriorityFeePerGas.toString()
+        }
+
+        let txnInfo = await this.transactionRepository.create(txnData);
+
+        await this.entityManager.save(txnInfo);
+
+        return txnData;
     }
 
     public async gasEstimator(): Promise<any> {

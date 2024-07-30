@@ -4,6 +4,9 @@ import { sendTokenPort } from "src/core/domain/transaction/port/usecase/sendToke
 
 @Exclude()
 export class sendTokenAdapter implements sendTokenPort {
+    // 1st req.body
+    @Expose()
+    @IsNumber()
     privateKey: string;
 
     @Expose()
@@ -20,7 +23,7 @@ export class sendTokenAdapter implements sendTokenPort {
     
     @Expose()
     @IsArray()
-    public amount: number[];
+    public amount: string[];
     
     @Expose()
     @IsString()

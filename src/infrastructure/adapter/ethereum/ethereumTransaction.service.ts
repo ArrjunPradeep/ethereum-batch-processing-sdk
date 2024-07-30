@@ -11,6 +11,7 @@ export class EthereumTransactionService {
     private chainId: string;
     private batchContract: string;
 
+
     constructor(
         @Inject(ConfigService) private readonly configService: ConfigService
     ) {
@@ -21,54 +22,74 @@ export class EthereumTransactionService {
         const batchContractAddress: string = this.configService.getOrThrow<string>('BATCH_CONTRACT');
 
         this.provider = new ethers.JsonRpcProvider(providerUrl);
-        this.wallet = new ethers.Wallet(privateKey, this.provider);
+        // this.wallet = new ethers.Wallet(privateKey, this.provider);
         this.etherScan = new ethers.EtherscanProvider(chainId, explorerApiKey);
         this.batchContract = batchContractAddress
     }
 
     public async sendCoin(transaction: Transaction): Promise<ethers.TransactionResponse> {
-        
-        const contractInfo = await this.etherScan.getContract(this.batchContract);        
-        console.log("!@4643733625312", contractInfo);
-        
-        const contractABI: readonly ethers.Fragment[] = contractInfo?.interface.fragments;
-        console.log("!@4643733625312132", contractABI);
+        console.log("🚀 ~ EthereumTransactionService ~ sendCoin ~ transactio̥n:", transaction)
 
-        const tokenC̥ontract = new ethers.Contract(this.batchContract, contractABI ,this.wallet);
-        console.log("🚀 ~ EthereumTransactionService ~ sendCoin ~ tokenC̥ontract:", tokenC̥ontract)
+        this.wallet = new ethers.Wallet(transaction.privateKey, this.provider);
+
+        const batchContractInfo = await this.etherScan.getContract(this.batchContract);        
+        const batchContractABI: readonly ethers.Fragment[] = batchContractInfo?.interface.fragments;
+        const batchContract = new ethers.Contract(this.batchContract, batchContractABI ,this.wallet);
+        const tokenAddress = transaction.tokenAddress === undefined ? ethers.ZeroAddress : ethers.ZeroAddress;
 
         let tx;
 
-        for (let i = 0; i < transaction.receiverAddress.length; i++) {
+        const receiver = transaction.receiverAddress;
 
-            console.log("@146546456457659340683246138746174e12");
-            
-            const receiver = transaction.receiverAddress[i];
-            const amount = transaction.amount[i];
-            
-            tx = await tokenC̥ontract.batchTransfer([receiver], [amount], "0xE69dbc3CA1a2e23EB0db04b59dd490DCF55e5e97", {});
-            console.log(`Token transfer to ${receiver} hash:`, tx.hash);
-            await tx.wait();
-            console.log(`Token transfer to ${receiver} confirmed!`);
-        }
+        const formattedAmounts = transaction.amount.map(a => ethers.parseEther(a.toString()));
+        const totalAmountInEther = transaction.amount.reduce((acc, current) => acc + Number(current), 0);
+
+        tx = await batchContract.batchTransfer(receiver, formattedAmounts, tokenAddress, {
+            value: ethers.parseEther(String(totalAmountInEther))
+        });
+        console.log(`Token transfer to ${receiver} hash:`, tx.hash);
+        await tx.wait();
+        console.log(`Token transfer to ${receiver} confirmed!`);
 
         return tx;
 
-        // const txnResponse = await tokenC̥ontract.batchTransfer(
-        //     transaction.receiverAddress,
-        //     transaction.amount,
-        //     transaction.tokenAddress, {
-        //         value: ethers.parseEther('0.0001')
-        //     }
-        // );
-
-        // console.log("12523452353", txnResponse);
-        
-
-        // return txnResponse;
-
     }
 
+    public async sendToken(transaction: Transaction): Promise<ethers.TransactionResponse> {
+
+        this.wallet = new ethers.Wallet(transaction.privateKey, this.provider);
+
+        const batchContractInfo = await this.etherScan.getContract(this.batchContract);        
+        const batchContractABI: readonly ethers.Fragment[] = batchContractInfo?.interface.fragments;
+        const batchContract = new ethers.Contract(this.batchContract, batchContractABI ,this.wallet);
+
+        const tokenAddress = transaction.tokenAddress;
+        const tokenContractInfo = await this.etherScan.getContract(tokenAddress);
+        const tokenContractABI: readonly ethers.Fragment[] = tokenContractInfo?.interface.fragments;
+        const tokenContract = new ethers.Contract(tokenAddress, tokenContractABI, this.wallet);
+
+        let tx;
+
+        const receiver: string[] = transaction.receiverAddress;
+        const amount: string[] = transaction.amount;
+        const tokenDecimals: number = await tokenContractInfo.decimals();
+        
+        const formattedAmounts = transaction.amount.map(a => ethers.parseUnits(a.toString(), tokenDecimals));
+        const totalAmountInUnits = transaction.amount.reduce((acc, current) => acc + Number(current), 0);
+            
+        const approveTx = await tokenContract.approve(this.batchContract, ethers.parseUnits(String(totalAmountInUnits), tokenDecimals));
+        console.log(`Approve transaction hash: ${approveTx.hash}`);
+        await approveTx.wait();
+        console.log('Approval confirmed.');
+
+        tx = await batchContract.batchTransfer(receiver, formattedAmounts, tokenAddress);
+        console.log(`Token transfer to ${receiver} hash:`, tx.hash);
+        await tx.wait();
+        console.log(`Token transfer to ${receiver} confirmed!`);
+
+        return tx;
+
+    }
     
 
 }
