@@ -3,6 +3,8 @@ import Request from "express";
 import { TransactionDITokens } from "src/core/domain/transaction/di/TransactionDITokens";
 import { sendCoinUseCase } from "src/core/domain/transaction/usecase/sendCoin.usecase";
 import { sendTokenUseCase } from "src/core/domain/transaction/usecase/sendToken.usecase";
+import { gasEstimatorUseCase } from "src/core/domain/transaction/usecase/gasEstimator.usecase";
+import { gasEstimatorAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/gasEstimator.adapter";
 import { sendCoinAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/sendCoin.adapter";
 import { sendTokenAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/sendToken.adapter";
 
@@ -11,7 +13,8 @@ export class TransactionController {
 
     constructor(
         @Inject(TransactionDITokens.sendCoinUseCase) private readonly sendCoinUseCase: sendCoinUseCase,
-        @Inject(TransactionDITokens.sendTokenUseCase) private readonly sendTokenUseCase: sendTokenUseCase
+        @Inject(TransactionDITokens.sendTokenUseCase) private readonly sendTokenUseCase: sendTokenUseCase,
+        @Inject(TransactionDITokens.gasEstimatorUseCase) private readonly gasEstimatorUseCase: gasEstimatorUseCase
     ) {}
 
     @Get('sendCoin')
@@ -32,7 +35,7 @@ export class TransactionController {
         console.log("2147138u9502368245", adapter);
         
         return {
-            info
+            data: info
         }
 
     }
@@ -55,12 +58,21 @@ export class TransactionController {
         console.log("98271491798124", adapter);
         
         return {
-            info
-        }
+            data: info
+        }   
     }
 
     @Get('gasEstimator')
     async gasEstimator() {
-        return "SAFLE2"
+        const adapter: gasEstimatorAdapter = await gasEstimatorAdapter.new({});
+
+        let info = await  this.gasEstimatorUseCase.execute(adapter);
+
+        console.log("3tuhui2u3tfnq32ijr1r41", info);
+        
+
+        return {
+            data: info
+        }    
     }
 }
