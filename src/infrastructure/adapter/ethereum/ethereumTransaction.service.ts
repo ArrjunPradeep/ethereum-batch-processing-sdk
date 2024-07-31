@@ -1,5 +1,6 @@
 import { Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import axios, { AxiosResponse } from "axios";
 import { Contract, ethers, EtherscanProvider, recoverAddress, TransactionResponse } from "ethers";
 import { Transaction } from "src/core/domain/transaction/entity/transaction.entity";
 
@@ -10,6 +11,7 @@ export class EthereumTransactionService {
     private etherScan: ethers.EtherscanProvider;
     private chainId: string;
     private batchContract: string;
+    private etherScanApiKey: string;
 
 
     constructor(
@@ -24,7 +26,8 @@ export class EthereumTransactionService {
         this.provider = new ethers.JsonRpcProvider(providerUrl);
         // this.wallet = new ethers.Wallet(privateKey, this.provider);
         this.etherScan = new ethers.EtherscanProvider(chainId, explorerApiKey);
-        this.batchContract = batchContractAddress
+        this.batchContract = batchContractAddress;
+        this.etherScanApiKey = explorerApiKey
     }
 
     public async sendCoin(transaction: Transaction): Promise<ethers.TransactionResponse> {
@@ -90,6 +93,47 @@ export class EthereumTransactionService {
         return tx;
 
     }
-    
 
+    public async gasEstimator(): Promise<any> {
+
+        type gasEstimatorRequest = {
+            module: string,
+            action: string,
+            apikey: string
+        }
+
+        type gasEstimatorData = {
+            low: string,
+            market: string,
+            aggressive: string,
+            baseFee: string
+        }
+
+        const url: string = 'https://api.etherscan.io/api';
+        const params: gasEstimatorRequest = {
+            module: 'gastracker',
+            action: 'gasoracle',
+            apikey: this.etherScanApiKey
+        };
+
+        try {
+            const response: AxiosResponse<any, any> = await axios.get(url, { params });
+            
+            const gasResult = response.data.result;
+
+            const gasData: gasEstimatorData = {
+                low: gasResult.SafeGasPrice,
+                market: gasResult.ProposeGasPrice,
+                aggressive: gasResult.FastGasPrice,
+                baseFee: gasResult.suggestBaseFee
+            }
+            
+            console.log("Gas Price Data:", gasData);
+            return gasData
+        } catch (error) {
+            console.error("Error fetching gas price data:", error);
+            throw error;
+        }
+
+    }
 }

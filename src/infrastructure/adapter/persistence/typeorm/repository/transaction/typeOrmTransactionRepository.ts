@@ -64,7 +64,10 @@ export class TypeOrmTransactionRepositoryAdapter extends Repository<TypeOrmTrans
     }
 
     public async gasEstimator(): Promise<any> {
-        return "gasEstimator"
+
+        const gasEstimatorResult = this.ethereumService.gasEstimator();
+
+        return gasEstimatorResult;
     }
 
 }
