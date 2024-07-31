@@ -40,7 +40,7 @@ export class TransactionController {
         Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
     })
     @ApiBody({type: HttpRestApiSendCoinBody})
-    // @UsePipes(new ValidationPipe({whitelist: true, forbidNonWhitelisted: false}))
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     async sendCoin(@Body() body: HttpRestApiSendCoinBody, @Req() req: Request) {
 
         const adapter: sendCoinAdapter = await sendCoinAdapter.new({
@@ -72,7 +72,8 @@ export class TransactionController {
         Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
     })
     @ApiBody({type: HttpRestApiSendTokenBody})
-    async sendToken(@Body() body, @Req() req: Request) {
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    async sendToken(@Body() body:HttpRestApiSendTokenBody, @Req() req: Request) {
         const adapter: sendTokenAdapter = await sendTokenAdapter.new({
             privateKey: body.privateKey,
             tokenAddress: body.tokenAddress,
