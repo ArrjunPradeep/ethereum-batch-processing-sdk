@@ -7,8 +7,22 @@ import { gasEstimatorUseCase } from "src/core/domain/transaction/usecase/gasEsti
 import { gasEstimatorAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/gasEstimator.adapter";
 import { sendCoinAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/sendCoin.adapter";
 import { sendTokenAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/sendToken.adapter";
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { HttpRestApiSendCoinBody } from "./documentation/transaction/HttpRestApiSendCoinBody";
+import { HttpRestApiSendTokenBody } from "./documentation/transaction/HttpRestApiSendTokenBody";
+import { ErrorDTO } from "./documentation/common/HttpError";
 
 @Controller('transaction')
+@ApiResponse({
+    status: 500,
+    type: ErrorDTO,
+    description: 'Internal Server Error',
+})
+@ApiResponse({
+   status: 404,
+   type: ErrorDTO,
+   description: 'Not Found',
+})
 export class TransactionController {
 
     constructor(
@@ -17,7 +31,15 @@ export class TransactionController {
         @Inject(TransactionDITokens.gasEstimatorUseCase) private readonly gasEstimatorUseCase: gasEstimatorUseCase
     ) {}
 
-    @Get('sendCoin')
+    @ApiTags('Batch Transactions')
+    @Post('sendCoin')
+    @ApiOperation({
+        summary: 'Batch Transfer of Native Ethereum Coins',
+        description: `This endpoint allows for the transfer of native Ethereum coins (ETH) to multiple recipients in a single transaction. It takes an array of recipient addresses and corresponding amounts, then processes the transfers in one go. 
+        
+        Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
+    })
+    @ApiBody({type: HttpRestApiSendCoinBody})
     async sendCoin(@Body() body, @Req() req: Request) {
 
         const adapter: sendCoinAdapter = await sendCoinAdapter.new({
@@ -40,7 +62,15 @@ export class TransactionController {
 
     }
 
-    @Get('SendToken')
+    @ApiTags('Batch Transactions')
+    @Post('SendToken')
+    @ApiOperation({
+        summary: 'Batch Transfer of ERC20 Tokens',
+        description: `Executes a batch transfer of ERC20 tokens to multiple recipients in a single transaction. Ensures efficient and atomic transfers, reducing transaction costs and time.
+
+        Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
+    })
+    @ApiBody({type: HttpRestApiSendTokenBody})
     async sendToken(@Body() body, @Req() req: Request) {
         const adapter: sendTokenAdapter = await sendTokenAdapter.new({
             chainId: body.chainId,
@@ -62,7 +92,15 @@ export class TransactionController {
         }   
     }
 
+    @ApiTags('Gas Metrics')
     @Get('gasEstimator')
+    @ApiOperation({
+        summary: 'Retrieve Gas Prices and Base Fee',
+        description: `Fetches the current gas fees (basefee + priorityfee) in gwei categorized into low, market, and aggressive, along with the base fee for Ethereum transactions. This endpoint provides essential information for estimating transaction costs and making informed decisions on gas fees.
+
+        Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
+
+    })
     async gasEstimator() {
         const adapter: gasEstimatorAdapter = await gasEstimatorAdapter.new({});
 
