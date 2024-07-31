@@ -5,9 +5,6 @@ import { Exclude, Expose, plainToInstance } from "class-transformer";
 export class TransactionUseCaseDto {
 
     @Expose()
-    public chainId: number;
-
-    @Expose()
     public sender: string
 
     @Expose()
@@ -30,6 +27,19 @@ export class TransactionUseCaseDto {
 
     @Expose()
     public priorityFee?: string;
+
+    @Expose()
+    public low: string;
+
+    @Expose()
+    public market: string;
+
+    @Expose()
+    public aggressive: string;
+
+    @Expose()
+    public baseFee: string;
+
 
     public static newFromTransaction(transaction: Transaction): TransactionUseCaseDto {
         return plainToInstance(TransactionUseCaseDto, transaction);
