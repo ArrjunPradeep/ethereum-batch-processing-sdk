@@ -10,10 +10,6 @@ export class sendTokenAdapter implements sendTokenPort {
     privateKey: string;
 
     @Expose()
-    @IsNumber()
-    public chainId: number;
-
-    @Expose()
     @IsString()
     public tokenAddress: string;
 
@@ -31,11 +27,11 @@ export class sendTokenAdapter implements sendTokenPort {
    
     @Expose()
     @IsString()
-    public maxBaseFee?: string;
+    public maxFeePerGas?: string;
    
     @Expose()
     @IsString()
-    public priorityFee?: string;
+    public maxPriorityFeePerGas?: string;
 
     public static async new(payload: sendTokenPort): Promise<sendTokenAdapter> {
         const adapter: sendTokenAdapter = plainToInstance(sendTokenAdapter, payload);

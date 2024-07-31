@@ -9,10 +9,6 @@ export class sendCoinAdapter implements sendCoinPort  {
     privateKey: string;
 
     @Expose()
-    @IsNumber()
-    public chainId: number;
-
-    @Expose()
     @IsArray()
     receiverAddress: string[];
     
@@ -26,11 +22,11 @@ export class sendCoinAdapter implements sendCoinPort  {
    
     @Expose()
     @IsString()
-    maxBaseFee?: string;
+    maxFeePerGas?: string;
    
     @Expose()
     @IsString()
-    priorityFee?: string;
+    maxPriorityFeePerGas?: string;
 
     public static async new(payload: sendCoinPort): Promise<sendCoinAdapter> {
         const adapter: sendCoinAdapter = plainToInstance(sendCoinAdapter, payload);

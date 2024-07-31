@@ -23,19 +23,19 @@ export class TransactionUseCaseDto {
     public gasLimit?: string;
 
     @Expose()
-    public maxBaseFee?: string;
+    public maxFeePerGas?: string;
 
     @Expose()
-    public priorityFee?: string;
+    public maxPriorityFeePerGas?: string;
 
     @Expose()
-    public low: string;
+    public lowMaxFeePerGas: string;
 
     @Expose()
-    public market: string;
+    public marketMaxFeePerGas: string;
 
     @Expose()
-    public aggressive: string;
+    public aggressiveMaxFeePerGas: string;
 
     @Expose()
     public baseFee: string;

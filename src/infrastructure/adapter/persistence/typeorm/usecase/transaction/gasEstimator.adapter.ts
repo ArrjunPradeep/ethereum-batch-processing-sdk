@@ -11,11 +11,11 @@ export class gasEstimatorAdapter implements gasEstimatorPort {
    
     @Expose()
     @IsString()
-    maxBaseFee?: string;
+    maxFeePerGas?: string;
    
     @Expose()
     @IsString()
-    priorityFee?: string;
+    maxPriorityFeePerGas?: string;
 
     public static async new(payload: gasEstimatorPort): Promise<gasEstimatorAdapter> {
         const adapter: gasEstimatorAdapter = plainToInstance(gasEstimatorAdapter, payload);

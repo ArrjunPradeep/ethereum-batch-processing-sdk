@@ -13,13 +13,12 @@ export class sendCoinService implements sendCoinUseCase {
 
     public async execute(payload?: sendCoinPort): Promise<TransactionUseCaseDto> {
         const transaction: Transaction = await Transaction.new({
-            chainId : payload.chainId,
             privateKey : payload.privateKey,
             receiverAddress : payload.receiverAddress,
             amount : payload.amount,
             gasLimit : payload.gasLimit,
-            maxBaseFee : payload.maxBaseFee,
-            priorityFee : payload.priorityFee
+            maxFeePerGas : payload.maxFeePerGas,
+            maxPriorityFeePerGas : payload.maxPriorityFeePerGas
         })
 
         let result = await this.transactionRepository.sendCoin(transaction);

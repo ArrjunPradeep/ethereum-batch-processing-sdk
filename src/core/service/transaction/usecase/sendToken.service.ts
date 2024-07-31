@@ -13,14 +13,13 @@ export class sendTokenService implements sendTokenUseCase {
 
     public async execute(payload?: sendTokenPort): Promise<TransactionUseCaseDto> {
         const transaction: Transaction = await Transaction.new({
-            chainId: payload.chainId,
             privateKey: payload.privateKey,
             tokenAddress: payload.tokenAddress,
             receiverAddress: payload.receiverAddress,
             amount: payload.amount,
             gasLimit: payload.gasLimit,
-            maxBaseFee: payload.maxBaseFee,
-            priorityFee: payload.priorityFee
+            maxFeePerGas: payload.maxFeePerGas,
+            maxPriorityFeePerGas: payload.maxPriorityFeePerGas
         })
 
         let result = await this.transactionRepository.sendToken(transaction);

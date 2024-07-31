@@ -18,9 +18,9 @@ export class HttpRestApiSendTokenBody {
     public gasLimit: string;
 
     @ApiPropertyOptional({type: 'string'})
-    public maxBaseFee: string;
+    public maxFeePerGas: string;
     
     @ApiPropertyOptional({type: 'string'})
-    public priorityFee: string;
+    public maxPriorityFeePerGas: string;
 
 }

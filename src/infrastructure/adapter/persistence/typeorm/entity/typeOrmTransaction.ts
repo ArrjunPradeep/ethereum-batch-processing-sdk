@@ -15,10 +15,10 @@ export class TypeOrmTransaction {
     gasLimit: string;
    
     @Column()
-    maxBaseFee: string;
+    maxFeePerGas: string;
    
     @Column()
-    priorityFee: string;
+    maxPriorityFeePerGas: string;
 
     constructor(transaction: Partial<TypeOrmTransaction>) {
         Object.assign(this, transaction);

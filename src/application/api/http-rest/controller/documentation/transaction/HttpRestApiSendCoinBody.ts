@@ -32,16 +32,16 @@ export class HttpRestApiSendCoinBody {
 
     @ApiPropertyOptional({
         type: 'string',
-        description: 'maxBaseFee (gwei)',
+        description: 'maxFeePerGas (gwei)',
         default: "0xBASEFEE"
     })
-    public maxBaseFee: string;
+    public maxFeePerGas: string;
     
     @ApiPropertyOptional({
         type: 'string',
-        description: 'priorityFee (gwei)',
+        description: 'maxPriorityFeePerGas (gwei)',
         default: "0xPRIORITYFEE"
     })
-    public priorityFee: string;
+    public maxPriorityFeePerGas: string;
 
 }

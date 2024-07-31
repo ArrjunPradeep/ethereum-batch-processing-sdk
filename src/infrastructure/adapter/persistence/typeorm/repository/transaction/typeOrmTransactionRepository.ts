@@ -31,8 +31,8 @@ export class TypeOrmTransactionRepositoryAdapter extends Repository<TypeOrmTrans
             sender: txnResult.from,
             hash: txnResult.hash,
             gasLimit: txnResult.gasLimit.toString(),
-            maxBaseFee: txnResult.maxFeePerGas.toString(),
-            priorityFee: txnResult.maxPriorityFeePerGas.toString()
+            maxFeePerGas: txnResult.maxFeePerGas.toString(),
+            maxPriorityFeePerGas: txnResult.maxPriorityFeePerGas.toString()
         }
 
         let txnInfo = await this.transactionRepository.create(txnData);
@@ -52,8 +52,8 @@ export class TypeOrmTransactionRepositoryAdapter extends Repository<TypeOrmTrans
             sender: txnResult.from,
             hash: txnResult.hash,
             gasLimit: txnResult.gasLimit.toString(),
-            maxBaseFee: txnResult.maxFeePerGas.toString(),
-            priorityFee: txnResult.maxPriorityFeePerGas.toString()
+            maxFeePerGas: txnResult.maxFeePerGas.toString(),
+            maxPriorityFeePerGas: txnResult.maxPriorityFeePerGas.toString()
         }
 
         let txnInfo = await this.transactionRepository.create(txnData);

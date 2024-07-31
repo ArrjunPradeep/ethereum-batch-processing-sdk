@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Post, Req, UsePipes, ValidationPipe } from "@nestjs/common";
 import Request from "express";
 import { TransactionDITokens } from "src/core/domain/transaction/di/TransactionDITokens";
 import { sendCoinUseCase } from "src/core/domain/transaction/usecase/sendCoin.usecase";
@@ -40,16 +40,16 @@ export class TransactionController {
         Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
     })
     @ApiBody({type: HttpRestApiSendCoinBody})
-    async sendCoin(@Body() body, @Req() req: Request) {
+    // @UsePipes(new ValidationPipe({whitelist: true, forbidNonWhitelisted: false}))
+    async sendCoin(@Body() body: HttpRestApiSendCoinBody, @Req() req: Request) {
 
         const adapter: sendCoinAdapter = await sendCoinAdapter.new({
-            chainId: body.chainId,
             privateKey: body.privateKey,
             receiverAddress: body.receiverAddress,
             amount: body.amount,
             gasLimit: body.gasLimit,
-            maxBaseFee: body.maxBaseFee,
-            priorityFee: body.priorityFee
+            maxFeePerGas: body.maxFeePerGas,
+            maxPriorityFeePerGas: body.maxPriorityFeePerGas
         })
 
         let info = await this.sendCoinUseCase.execute(adapter);
@@ -62,6 +62,7 @@ export class TransactionController {
 
     }
 
+
     @ApiTags('Batch Transactions')
     @Post('SendToken')
     @ApiOperation({
@@ -73,14 +74,13 @@ export class TransactionController {
     @ApiBody({type: HttpRestApiSendTokenBody})
     async sendToken(@Body() body, @Req() req: Request) {
         const adapter: sendTokenAdapter = await sendTokenAdapter.new({
-            chainId: body.chainId,
             privateKey: body.privateKey,
             tokenAddress: body.tokenAddress,
             receiverAddress: body.receiverAddress,
             amount: body.amount,
             gasLimit: body.gasLimit,
-            maxBaseFee: body.maxBaseFee,
-            priorityFee: body.priorityFee
+            maxFeePerGas: body.maxFeePerGas,
+            maxPriorityFeePerGas: body.maxPriorityFeePerGas
         })
 
         let info = await this.sendTokenUseCase.execute(adapter);
@@ -96,7 +96,7 @@ export class TransactionController {
     @Get('gasEstimator')
     @ApiOperation({
         summary: 'Retrieve Gas Prices and Base Fee',
-        description: `Fetches the current gas fees (basefee + priorityfee) in gwei categorized into low, market, and aggressive, along with the base fee for Ethereum transactions. This endpoint provides essential information for estimating transaction costs and making informed decisions on gas fees.
+        description: `Fetches the current gas fees (basefee + maxPriorityFeePerGas) in gwei categorized into low, market, and aggressive, along with the base fee for Ethereum transactions. This endpoint provides essential information for estimating transaction costs and making informed decisions on gas fees.
 
         Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
 
