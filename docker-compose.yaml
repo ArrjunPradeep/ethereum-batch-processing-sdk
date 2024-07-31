@@ -1,5 +1,17 @@
 services:
-  txnPostgres:
+  sdk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3369:3369"
+    env_file:
+      - ./env/app.env
+      - ./env/blockchain.env
+    volumes:
+      - ./src:/app/src
+
+  postgres_db:
     image: postgres:13.15-bullseye
     env_file: 
       - ./env/database.env
