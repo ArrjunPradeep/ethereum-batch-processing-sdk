@@ -44,7 +44,7 @@ The Blockchain Transaction Service is a `NestJS` application designed to facilit
    NODE_URL=XXXXX
    PRIVATE_KEY=XXXXX
    EXPLORER_API_KEY=XXXXX
-   CHAIN_ID=XXXXX
+   CHAIN_ID=sepolia
    BATCH_CONTRACT=XXXXX
    ```
 
