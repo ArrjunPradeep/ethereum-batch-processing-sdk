@@ -10,10 +10,12 @@ services:
       - ./env/blockchain.env
     volumes:
       - ./src:/app/src
+    depends_on:
+      - postgres_db
 
   postgres_db:
     image: postgres:13.15-bullseye
+    ports:
+      - "5432:5432"
     env_file: 
       - ./env/database.env
-    ports:
-      - 5434:5432
