@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: arrjunpradeep/sdk:latest
     ports:
       - "3369:3369"
     env_file:
