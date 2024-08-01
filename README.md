@@ -81,6 +81,8 @@ The Blockchain Transaction Service is a `NestJS` application designed to facilit
 
    To test our SDK, go to http://localhost:3369/swagger for API documentation and testing
 
+   ![alt text](image.png)
+
 - ***Notes :***
 
    *****Ensure your .env files (app.env, blockchain.env, and database.env) are correctly configured and located in the ./env directory. The PostgreSQL container should be up and running before the application container to avoid connectivity issues.*****
