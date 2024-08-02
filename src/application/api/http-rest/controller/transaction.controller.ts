@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Req, UsePipes, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Inject, InternalServerErrorException, Post, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import Request from "express";
 import { TransactionDITokens } from "src/core/domain/transaction/di/TransactionDITokens";
 import { sendCoinUseCase } from "src/core/domain/transaction/usecase/sendCoin.usecase";
@@ -7,11 +7,14 @@ import { gasEstimatorUseCase } from "src/core/domain/transaction/usecase/gasEsti
 import { gasEstimatorAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/gasEstimator.adapter";
 import { sendCoinAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/sendCoin.adapter";
 import { sendTokenAdapter } from "src/infrastructure/adapter/persistence/typeorm/usecase/transaction/sendToken.adapter";
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { HttpRestApiSendCoinBody } from "./documentation/transaction/HttpRestApiSendCoinBody";
 import { HttpRestApiSendTokenBody } from "./documentation/transaction/HttpRestApiSendTokenBody";
 import { ErrorDTO } from "./documentation/common/HttpError";
+import { ApiKeyGuard } from "../transaction/guards/transaction.guard";
 
+@UseGuards(ApiKeyGuard)
+@ApiBearerAuth('API_KEY')
 @Controller('transaction')
 @ApiResponse({
     status: 500,
@@ -19,9 +22,9 @@ import { ErrorDTO } from "./documentation/common/HttpError";
     description: 'Internal Server Error',
 })
 @ApiResponse({
-   status: 404,
-   type: ErrorDTO,
-   description: 'Not Found',
+    status: 404,
+    type: ErrorDTO,
+    description: 'Not Found',
 })
 export class TransactionController {
 
@@ -29,7 +32,7 @@ export class TransactionController {
         @Inject(TransactionDITokens.sendCoinUseCase) private readonly sendCoinUseCase: sendCoinUseCase,
         @Inject(TransactionDITokens.sendTokenUseCase) private readonly sendTokenUseCase: sendTokenUseCase,
         @Inject(TransactionDITokens.gasEstimatorUseCase) private readonly gasEstimatorUseCase: gasEstimatorUseCase
-    ) {}
+    ) { }
 
     @ApiTags('Batch Transactions')
     @Post('sendCoin')
@@ -39,25 +42,36 @@ export class TransactionController {
         
         Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
     })
-    @ApiBody({type: HttpRestApiSendCoinBody})
+    @ApiBody({ type: HttpRestApiSendCoinBody })
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     async sendCoin(@Body() body: HttpRestApiSendCoinBody, @Req() req: Request) {
 
-        const adapter: sendCoinAdapter = await sendCoinAdapter.new({
-            privateKey: body.privateKey,
-            receiverAddress: body.receiverAddress,
-            amount: body.amount,
-            gasLimit: body.gasLimit,
-            maxFeePerGas: body.maxFeePerGas,
-            maxPriorityFeePerGas: body.maxPriorityFeePerGas
-        })
+        try {
+            const adapter: sendCoinAdapter = await sendCoinAdapter.new({
+                privateKey: body.privateKey,
+                receiverAddress: body.receiverAddress,
+                amount: body.amount,
+                gasLimit: body.gasLimit,
+                maxFeePerGas: body.maxFeePerGas,
+                maxPriorityFeePerGas: body.maxPriorityFeePerGas
+            })
 
-        let info = await this.sendCoinUseCase.execute(adapter);
+            let info = await this.sendCoinUseCase.execute(adapter);
 
-        console.log("2147138u9502368245", adapter);
-        
-        return {
-            data: info
+            console.log("2147138u9502368245", adapter);
+
+            return {
+                data: info
+            }
+        } catch (error) {
+            console.error('Transaction Error:', error.message);
+            if (error.message.includes('insufficient funds')) {
+                throw new BadRequestException('Insufficient funds for the transaction.');
+            } else if (error.message.includes('bad address')) {
+                throw new BadRequestException('Invalid Address');
+            } else {
+                throw new InternalServerErrorException('Transaction Error');
+            }
         }
 
     }
@@ -71,26 +85,39 @@ export class TransactionController {
 
         Note : Please refer to the Schemas mentioned at the end of documentation for better understanding`
     })
-    @ApiBody({type: HttpRestApiSendTokenBody})
+    @ApiBody({ type: HttpRestApiSendTokenBody })
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    async sendToken(@Body() body:HttpRestApiSendTokenBody, @Req() req: Request) {
-        const adapter: sendTokenAdapter = await sendTokenAdapter.new({
-            privateKey: body.privateKey,
-            tokenAddress: body.tokenAddress,
-            receiverAddress: body.receiverAddress,
-            amount: body.amount,
-            gasLimit: body.gasLimit,
-            maxFeePerGas: body.maxFeePerGas,
-            maxPriorityFeePerGas: body.maxPriorityFeePerGas
-        })
+    async sendToken(@Body() body: HttpRestApiSendTokenBody, @Req() req: Request) {
 
-        let info = await this.sendTokenUseCase.execute(adapter);
+        try {
+            const adapter: sendTokenAdapter = await sendTokenAdapter.new({
+                privateKey: body.privateKey,
+                tokenAddress: body.tokenAddress,
+                receiverAddress: body.receiverAddress,
+                amount: body.amount,
+                gasLimit: body.gasLimit,
+                maxFeePerGas: body.maxFeePerGas,
+                maxPriorityFeePerGas: body.maxPriorityFeePerGas
+            })
 
-        console.log("98271491798124", adapter);
-        
-        return {
-            data: info
-        }   
+            let info = await this.sendTokenUseCase.execute(adapter);
+
+            console.log("98271491798124", adapter);
+
+            return {
+                data: info
+            }
+        } catch (error) {
+            console.error('Transaction Error:', error);
+            if (error.message.includes('insufficient funds')) {
+                throw new BadRequestException('Insufficient funds for the transaction.');
+            } else if (error.message.includes('bad address')) {
+                throw new BadRequestException('Invalid Address');
+            } else {
+                throw new InternalServerErrorException('Transaction Error');
+            }
+        }
+
     }
 
     @ApiTags('Gas Metrics')
@@ -103,15 +130,26 @@ export class TransactionController {
 
     })
     async gasEstimator() {
-        const adapter: gasEstimatorAdapter = await gasEstimatorAdapter.new({});
+        try {
+            const adapter: gasEstimatorAdapter = await gasEstimatorAdapter.new({});
 
-        let info = await  this.gasEstimatorUseCase.execute(adapter);
+            let info = await this.gasEstimatorUseCase.execute(adapter);
 
-        console.log("3tuhui2u3tfnq32ijr1r41", info);
-        
+            console.log("3tuhui2u3tfnq32ijr1r41", info);
 
-        return {
-            data: info
-        }    
+
+            return {
+                data: info
+            }
+        } catch (error) {
+            console.error('Transaction Error:', error.message);
+            if (error.message.includes('insufficient funds')) {
+                throw new BadRequestException('Insufficient funds for the transaction.');
+            } else if (error.message.includes('bad address')) {
+                throw new BadRequestException('Invalid Address');
+            } else {
+                throw new InternalServerErrorException('Transaction Error');
+            }
+        }
     }
 }
