@@ -37,6 +37,7 @@ The Blockchain Transaction Service is a `NestJS` application designed to facilit
    ```bash
    APP_HOST=0.0.0.0
    APP_PORT=3369
+   API_SECRET_KEY=safle
    ```
 
    * `blockchain.env` : 
@@ -80,6 +81,8 @@ The Blockchain Transaction Service is a `NestJS` application designed to facilit
 7. **Access API Documentation**
 
    To test our SDK, go to http://localhost:3369/swagger for API documentation and testing
+
+   You need to provide the API_SECRET_KEY mentioned in `app.env` for accessing the endpoints through Swagger.
 
    ![alt text](image.png)
 
