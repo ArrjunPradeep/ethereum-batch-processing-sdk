@@ -4,6 +4,7 @@ import { RootModule } from './di/root.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { ApiKeyGuard } from './api/http-rest/transaction/guards/transaction.guard';
 
 export class ServerApplication {
   private host: string;
@@ -21,6 +22,7 @@ export class ServerApplication {
     this.buildAPIDocumentaion(app);
     this.log();
 
+    app.useGlobalGuards(new ApiKeyGuard(configService));
     await app.listen(this.port, this.host);
   }
 
@@ -33,6 +35,11 @@ export class ServerApplication {
       .setTitle(title)
       .setDescription(description)
       .setVersion(version)
+      .addApiKey({
+        type: 'apiKey',
+        name: 'x-api-key',
+        in: 'header',
+      }, 'API_KEY')
       .build();
 
     const document: OpenAPIObject = SwaggerModule.createDocument(app, options);
