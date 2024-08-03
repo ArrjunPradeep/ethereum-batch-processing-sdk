@@ -24,6 +24,12 @@ export class Transaction {
     maxFeePerGas?: string;
     maxPriorityFeePerGas?: string;
 
+
+    /**
+     * Constructs a new Transaction instance.
+     * 
+     * @param payload - The data required to create a new Transaction entity.
+    */
     constructor(payload: CreateTransactionEntityPayload) {
         this.privateKey = payload.privateKey;
         this.tokenAddress = payload.tokenAddress;
@@ -34,6 +40,15 @@ export class Transaction {
         this.maxPriorityFeePerGas = payload.maxPriorityFeePerGas;
     }
 
+    /**
+     * Static method to create a new Transaction instance asynchronously.
+     * 
+     * This method is a convenience method that allows for asynchronous operations
+     * if needed before creating the Transaction instance.
+     * 
+     * @param payload - The data required to create a new Transaction entity.
+     * @returns A promise that resolves to a new Transaction instance.
+    */
     public static async new(payload: CreateTransactionEntityPayload): Promise<Transaction> {
         const transaction: Transaction = new Transaction(payload);
         return transaction;
