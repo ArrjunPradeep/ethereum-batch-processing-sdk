@@ -10,49 +10,51 @@ import { TypeOrmTransaction } from "src/infrastructure/adapter/persistence/typeo
 import { EthereumTransactionService } from "src/infrastructure/adapter/ethereum/ethereumTransaction.service";
 import { InfrastructureModule } from "./infrastructure.module";
 
+// Providers for persistence layer
 const persistenceProviders: Provider[] = [
     {
-        provide: TransactionDITokens.TransactionRepository,
-        useClass: TypeOrmTransactionRepositoryAdapter
+        provide: TransactionDITokens.TransactionRepository, // Token for Transaction Repository
+        useClass: TypeOrmTransactionRepositoryAdapter  // Use the TypeORM repository adapter for the implementation
     },
     {
-        provide: 'EthereumTransactionService',
-        useClass: EthereumTransactionService
+        provide: 'EthereumTransactionService', // Token for Ethereum Transaction Service
+        useClass: EthereumTransactionService // Use the Ethereum transaction service for the implementation
     }
 ]
 
+// Providers for use cases
 const useCaseProviders: Provider[] = [
     {
-        provide: TransactionDITokens.sendCoinUseCase,
-        useFactory: (transactionRepository) => new sendCoinService(transactionRepository),
-        inject: [TransactionDITokens.TransactionRepository]
+        provide: TransactionDITokens.sendCoinUseCase, // Token for Send Coin Use Case
+        useFactory: (transactionRepository) => new sendCoinService(transactionRepository), // Factory function to create the sendCoinService
+        inject: [TransactionDITokens.TransactionRepository] // Inject Transaction Repository
     },
     {
-        provide: TransactionDITokens.sendTokenUseCase,
-        useFactory: (transactionRepository) => new sendTokenService(transactionRepository),
-        inject: [TransactionDITokens.TransactionRepository]
+        provide: TransactionDITokens.sendTokenUseCase, // Token for Send Token Use Case
+        useFactory: (transactionRepository) => new sendTokenService(transactionRepository), // Factory function to create the sendTokenService
+        inject: [TransactionDITokens.TransactionRepository] // Inject Transaction Repository
     },
     {
-        provide: TransactionDITokens.gasEstimatorUseCase,
-        useFactory: (transactionRepository) => new gasEstimatorService(transactionRepository),
-        inject: [TransactionDITokens.TransactionRepository]
+        provide: TransactionDITokens.gasEstimatorUseCase, // Token for Gas Estimator Use Case
+        useFactory: (transactionRepository) => new gasEstimatorService(transactionRepository), // Factory function to create the gasEstimatorService
+        inject: [TransactionDITokens.TransactionRepository] // Inject Transaction Repository
     }
 ]
 
 @Module({
     imports: [
-        InfrastructureModule,
-        TypeOrmModule.forFeature([TypeOrmTransaction]),
+        InfrastructureModule, // Import the Infrastructure module to use its providers
+        TypeOrmModule.forFeature([TypeOrmTransaction]), // Register TypeOrmTransaction entity with TypeORM
     ],
     controllers: [
-        TransactionController
+        TransactionController // Register the TransactionController
     ],
     exports: [
-        TransactionDITokens.TransactionRepository,
+        TransactionDITokens.TransactionRepository, // Export the Transaction Repository token for use in other modules
     ],
     providers: [
-        ...useCaseProviders,
-        ...persistenceProviders
+        ...useCaseProviders, // Register use case providers
+        ...persistenceProviders // Register persistence providers
     ]
 })
 
