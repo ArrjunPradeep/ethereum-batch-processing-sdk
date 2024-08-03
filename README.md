@@ -4,6 +4,24 @@
 
 The Blockchain Transaction Service is a `NestJS` application designed to facilitate batch processing of blockchain transactions. It supports sending coins and tokens, as well as retrieving gas estimation data for transactions. The service is built with a `clean architecture` approach, incorporating modules for separation of concerns and scalability.
 
+## Clean Architecture
+
+Clean Architecture is a software design principle aimed at creating systems that are easy to maintain and scale. In this project, Clean Architecture principles are applied to achieve the following:
+
+- **Separation of Concerns**: Each layer of the application is responsible for a distinct part of the system, making it easier to manage and evolve the codebase.
+  - **Application Layer**: Contains API controllers and application modules, focusing on handling requests and responses.
+  - **Core Layer**: Encapsulates the core business logic and domain models, ensuring that the application's core functionality is independent of external systems.
+  - **Infrastructure Layer**: Manages interactions with external systems such as databases and blockchain services, allowing the core and application layers to remain unaffected by changes in infrastructure.
+
+- **Dependency Inversion**: Higher-level modules (such as core business logic) do not depend on lower-level modules (such as infrastructure). Instead, both depend on abstractions (interfaces), which allows for easier testing and modification.
+
+- **Modularity**: The project is organized into well-defined modules, each with a specific responsibility. This modularity enhances readability and maintainability.
+
+- **Scalability**: The structure allows for the easy addition of new features and integration of new technologies without disrupting existing functionality.
+
+For more detailed information on Clean Architecture and its principles, refer to [Robert C. Martin's "Clean Architecture"](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+
+
 ## Features
 
 - **`Send Coins`**: Process batch transactions for sending coins.
@@ -81,7 +99,6 @@ The Blockchain Transaction Service is a `NestJS` application designed to facilit
 - **`application`**: Represents the application layer, including controllers, modules, and server configuration.
 - **`core`**: Contains the core business logic and domain models. This layer defines the use cases and domain entities.
 - **`infrastructure`**: Manages the interaction with external systems and databases, including implementation details for persistence and external services.
-
 
 ## Installation
 
