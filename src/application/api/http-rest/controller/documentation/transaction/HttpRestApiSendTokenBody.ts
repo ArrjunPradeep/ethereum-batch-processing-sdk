@@ -1,8 +1,18 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsArray, IsOptional, IsString, IsNotEmpty, Matches, ArrayNotEmpty } from 'class-validator';
 
+/**
+ * HttpRestApiSendTokenBody represents the request body structure for the `sendToken` endpoint.
+ * It defines the expected input parameters for transferring ERC20 tokens.
+ */
 export class HttpRestApiSendTokenBody {
 
+    /**
+     * The account private key used for signing the transaction. 
+     * This should be a 64-character hexadecimal string.
+     * 
+     * @example "0xACCOUNT_PRIVATE_KEY"
+     */
     @ApiPropertyOptional({
         type: 'string',
         description: "Account private key",
@@ -13,6 +23,12 @@ export class HttpRestApiSendTokenBody {
     @Matches(/^[a-fA-F0-9]{64}$/, { message: 'Private key must be a 64-character hexadecimal string' })
     public privateKey: string;
 
+    /**
+     * The ERC20 token address to be used in the transaction. 
+     * This should be a valid Ethereum address (0x followed by 40 hexadecimal characters).
+     * 
+     * @example "0x7218"
+     */
     @ApiProperty({
         type: 'string',
         description: "ERC20 Token Address",
@@ -23,6 +39,12 @@ export class HttpRestApiSendTokenBody {
     @Matches(/^0x[a-fA-F0-9]{40}$/, { message: 'Token address must be a valid Ethereum address (0x followed by 40 hexadecimal characters)' })
     public tokenAddress: string;
 
+    /**
+     * An array of receiver addresses to which the tokens will be sent. 
+     * Each address should be a valid Ethereum address string.
+     * 
+     * @example ["0xADDR1", "0xADDR2"]
+     */
     @ApiProperty({
         type: [String],
         description: "Array of receiver addresses",
@@ -34,6 +56,12 @@ export class HttpRestApiSendTokenBody {
     @IsString({ each: true, message: 'Each receiver address must be a string' })
     public receiverAddress: string[];
 
+    /**
+     * An array of amounts corresponding to the receiver addresses. 
+     * Each amount should be a string representing the value in tokens (without decimals).
+     * 
+     * @example ["0.0001", "0.0001"]
+     */
     @ApiProperty({
         type: [String],
         description: "Array of amounts (without decimals)",
@@ -45,6 +73,11 @@ export class HttpRestApiSendTokenBody {
     @IsString({ each: true, message: 'Each amount must be a string' })
     public amount: string[];
 
+    /**
+     * Optional parameter specifying the gas limit for the transaction.
+     * 
+     * @example "60000"
+     */
     @ApiPropertyOptional({
         type: 'string',
         description: "Gas Limit",
@@ -54,6 +87,11 @@ export class HttpRestApiSendTokenBody {
     @IsString({ message: 'Gas limit must be a string' })
     public gasLimit?: string;
 
+    /**
+     * Optional parameter specifying the maximum fee per gas unit (in gwei) that the sender is willing to pay.
+     * 
+     * @example "19"
+     */
     @ApiPropertyOptional({
         type: 'string',
         description: 'maxFeePerGas (in gwei)',
@@ -63,6 +101,11 @@ export class HttpRestApiSendTokenBody {
     @IsString({ message: 'maxFeePerGas must be a string' })
     public maxFeePerGas?: string;
 
+    /**
+     * Optional parameter specifying the maximum priority fee per gas unit (in gwei) that the sender is willing to pay.
+     * 
+     * @example "0.1"
+     */
     @ApiPropertyOptional({
         type: 'string',
         description: 'maxPriorityFeePerGas (in gwei)',
