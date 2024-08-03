@@ -100,6 +100,15 @@ For more detailed information on Clean Architecture and its principles, refer to
 - **`core`**: Contains the core business logic and domain models. This layer defines the use cases and domain entities.
 - **`infrastructure`**: Manages the interaction with external systems and databases, including implementation details for persistence and external services.
 
+## BatchTransfer Smart Contract
+This project utilizes the BatchTransfer smart contract, which is responsible for handling batch transactions on the blockchain. The smart contract is implemented in a separate repository and is an integral part of this service.
+
+### Repository Link
+BatchTransfer Smart Contract: [BatchTransfer](https://github.com/ArrjunPradeep/batch-transfer-erc20-contract)
+
+### Integration
+The BatchTransfer smart contract integrates with the Blockchain Transaction Service to facilitate efficient processing of multiple transactions in a single batch. For detailed information on how to use or deploy the BatchTransfer smart contract, refer to its dedicated repository.
+
 ## Installation
 
 ### Prerequisites
